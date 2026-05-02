@@ -11,11 +11,23 @@ const STATUS_COLOR = {
 };
 
 export default function WorkerDashboard() {
-  const { user, logout } = useAuth();
+  const { user, logout, switchRole } = useAuth();
   const navigate = useNavigate();
   const [requests, setRequests] = useState([]);
   const [available, setAvailable] = useState(user?.workerInfo?.isAvailable || false);
   const [loading, setLoading] = useState(true);
+  const [switching, setSwitching] = useState(false);
+
+  const handleSwitchRole = async () => {
+    setSwitching(true);
+    try {
+      await switchRole();
+      navigate('/home');
+    } catch (err) {
+      alert(err.message);
+      setSwitching(false);
+    }
+  };
 
   const fetchRequests = () => {
     api.get('/requests/incoming').then(setRequests).catch(console.error).finally(() => setLoading(false));
@@ -63,6 +75,13 @@ export default function WorkerDashboard() {
           </div>
           <div className="flex items-center gap-1">
             <NotificationBell />
+            <button
+              onClick={handleSwitchRole}
+              disabled={switching}
+              className="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors disabled:opacity-50"
+            >
+              {switching ? '...' : '👤 Modo cliente'}
+            </button>
             <button onClick={() => navigate('/worker/history')} className="p-2 text-gray-medium">📋</button>
             <button onClick={logout} className="p-2 text-gray-medium">🚪</button>
           </div>

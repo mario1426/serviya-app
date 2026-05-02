@@ -42,4 +42,24 @@ const getMe = async (req, res) => {
   res.json(req.user);
 };
 
-module.exports = { registerUser, getMe };
+// PUT /api/auth/switch-role
+// Cambia el rol entre cliente y trabajador
+const switchRole = async (req, res) => {
+  try {
+    const user = req.user;
+    if (user.role === 'admin') {
+      return res.status(403).json({ message: 'Los admins no pueden cambiar de rol' });
+    }
+    const newRole = user.role === 'client' ? 'worker' : 'client';
+    const updated = await User.findByIdAndUpdate(
+      user._id,
+      { role: newRole },
+      { new: true }
+    );
+    res.json(updated);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+module.exports = { registerUser, getMe, switchRole };

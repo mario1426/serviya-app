@@ -68,10 +68,16 @@ export const AuthProvider = ({ children }) => {
     return me;
   };
 
+  const switchRole = async () => {
+    const updated = await api.put('/auth/switch-role');
+    setUser(updated);
+    return updated;
+  };
+
   return (
     <AuthContext.Provider value={{
       firebaseUser, user, loading,
-      loginWithGoogle, registerWithRole, logout, refreshUser,
+      loginWithGoogle, registerWithRole, logout, refreshUser, switchRole,
       isAuthenticated: !!user,
       isWorker: user?.role === 'worker',
       isAdmin: user?.role === 'admin',

@@ -6,11 +6,23 @@ import api from '../../services/api';
 import NotificationBell from '../../components/NotificationBell';
 
 export default function ClientHome() {
-  const { user, logout } = useAuth();
+  const { user, logout, switchRole } = useAuth();
   const navigate = useNavigate();
   const { coords, loading: geoLoading } = useGeolocation();
   const [categories, setCategories] = useState([]);
   const [search, setSearch] = useState('');
+  const [switching, setSwitching] = useState(false);
+
+  const handleSwitchRole = async () => {
+    setSwitching(true);
+    try {
+      await switchRole();
+      navigate('/worker/dashboard');
+    } catch (err) {
+      alert(err.message);
+      setSwitching(false);
+    }
+  };
 
   useEffect(() => {
     api.get('/categories').then(setCategories).catch(console.error);
@@ -43,6 +55,13 @@ export default function ClientHome() {
           </div>
           <div className="flex items-center gap-1">
             <NotificationBell />
+            <button
+              onClick={handleSwitchRole}
+              disabled={switching}
+              className="text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-green-50 text-green-600 hover:bg-green-100 transition-colors disabled:opacity-50"
+            >
+              {switching ? '...' : '🔧 Modo trabajo'}
+            </button>
             <button onClick={() => navigate('/history')} className="p-2 text-gray-medium hover:text-navy">
               📋
             </button>
