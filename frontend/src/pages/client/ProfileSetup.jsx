@@ -81,6 +81,13 @@ export default function ClientProfileSetup() {
           <button type="submit" disabled={loading} className="btn-primary w-full">
             {loading ? 'Guardando...' : 'Continuar a ServiYa'}
           </button>
+
+          <p className="text-xs text-center text-gray-medium">
+            Al continuar aceptás nuestros{' '}
+            <a href="/terms" target="_blank" className="text-primary underline">Términos y condiciones</a>
+            {' '}y la{' '}
+            <a href="/privacy" target="_blank" className="text-primary underline">Política de privacidad</a>
+          </p>
         </form>
       </div>
     </div>

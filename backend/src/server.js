@@ -88,6 +88,7 @@ app.use('/api/upload', require('./routes/upload'));
 app.use('/api/tickets', require('./routes/tickets'));
 app.use('/api/push',          require('./routes/push'));
 app.use('/api/notifications', require('./routes/notifications'));
+app.use('/api/support',       require('./routes/support'));
 
 // Endpoint de salud
 app.get('/health', (req, res) => res.json({ status: 'ok', env: process.env.NODE_ENV }));

@@ -98,10 +98,24 @@ function emailNewReview(workerEmail, workerName, clientName, rating, comment) {
   );
 }
 
+
+async function emailSupportContact({ name, email, subject, message }) {
+  await sendEmail(
+    process.env.EMAIL_USER,
+    `[Soporte ServiYa] ${subject}`,
+    `<h2 style="color:#1E3A8A">Nuevo mensaje de soporte</h2>
+     <p><strong>De:</strong> ${name} (${email})</p>
+     <p><strong>Asunto:</strong> ${subject}</p>
+     <hr/>
+     <p style="white-space:pre-line">${message}</p>`,
+  );
+}
+
 module.exports = {
   sendEmail,
   emailNewRequest,
   emailRequestAccepted,
   emailServiceCompleted,
   emailNewReview,
+  emailSupportContact,
 };

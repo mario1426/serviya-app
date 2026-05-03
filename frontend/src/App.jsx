@@ -36,8 +36,11 @@ import Reclamo from './pages/client/Reclamo';
 // Shared
 import Chat from './pages/Chat';
 import NotFound from './pages/NotFound';
+import TermsAndConditions from './pages/TermsAndConditions';
+import PrivacyPolicy from './pages/PrivacyPolicy';
+import Support from './pages/Support';
 
-// ─── Guards ────────────────────────────────────────────────────
+// ─── Guards ──────────────────────────────────────────────
 const PrivateRoute = ({ children }) => {
   const { isAuthenticated, loading, firebaseUser } = useAuth();
   if (loading) return <LoadingScreen />;
@@ -83,7 +86,7 @@ function PushBootstrap() {
   return null;
 }
 
-// ─── App ───────────────────────────────────────────────────────
+// ─── App ───────────────────────────────────────────────
 export default function App() {
   return (
     <BrowserRouter>
@@ -94,6 +97,9 @@ export default function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/role-select" element={<RoleSelect />} />
+          <Route path="/terms" element={<TermsAndConditions />} />
+          <Route path="/privacy" element={<PrivacyPolicy />} />
+          <Route path="/support" element={<Support />} />
 
           {/* Cliente */}
           <Route path="/home" element={<PrivateRoute><ClientRoute><ClientHome /></ClientRoute></PrivateRoute>} />

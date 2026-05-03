@@ -130,8 +130,23 @@ export default function Landing() {
       </section>
 
       {/* Footer */}
-      <footer className="bg-navy text-white/60 text-center text-sm py-6 px-4">
-        <p>© 2025 ServiYa — Servicios a domicilio en toda Argentina</p>
+      <footer className="bg-navy text-white py-8 px-4">
+        <div className="max-w-4xl mx-auto flex flex-col items-center gap-4">
+          <div className="flex items-center gap-1">
+            <span className="text-xl font-bold text-blue-400">Servi</span>
+            <span className="text-xl font-bold text-white">Ya</span>
+          </div>
+          <div className="flex flex-wrap justify-center gap-4 text-sm text-white/70">
+            <button onClick={() => navigate('/terms')} className="hover:text-white transition-colors">Términos y condiciones</button>
+            <span className="text-white/30">·</span>
+            <button onClick={() => navigate('/privacy')} className="hover:text-white transition-colors">Política de privacidad</button>
+            <span className="text-white/30">·</span>
+            <button onClick={() => navigate('/support')} className="hover:text-white transition-colors">Soporte</button>
+            <span className="text-white/30">·</span>
+            <a href="mailto:ojedamario911@gmail.com" className="hover:text-white transition-colors">ojedamario911@gmail.com</a>
+          </div>
+          <p className="text-white/40 text-xs">© 2025 ServiYa — Servicios a domicilio en toda Argentina</p>
+        </div>
       </footer>
     </div>
   );
