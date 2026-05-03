@@ -122,13 +122,20 @@ export default function WorkerDashboard() {
         </div>
 
         {/* Acciones rápidas */}
-        <div className="grid grid-cols-3 gap-3">
+        <div className="grid grid-cols-2 gap-3">
           <button
             onClick={() => navigate('/worker/profile/setup')}
             className="card text-center hover:shadow-md transition-shadow"
           >
             <p className="text-2xl mb-1">✏️</p>
             <p className="text-sm font-medium text-navy">Perfil</p>
+          </button>
+          <button
+            onClick={() => navigate('/worker/stats')}
+            className="card text-center hover:shadow-md transition-shadow"
+          >
+            <p className="text-2xl mb-1">📊</p>
+            <p className="text-sm font-medium text-navy">Estadísticas</p>
           </button>
           <button
             onClick={() => navigate('/worker/earnings')}

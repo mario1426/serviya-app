@@ -24,6 +24,7 @@ import WorkerRequestDetail from './pages/worker/RequestDetail';
 import WorkerVerification from './pages/worker/Verification';
 import WorkerHistory from './pages/worker/History';
 import WorkerEarnings from './pages/worker/Earnings';
+import WorkerStats from './pages/worker/Stats';
 
 // Admin
 import AdminDashboard from './pages/admin/AdminDashboard';
@@ -119,6 +120,7 @@ export default function App() {
           <Route path="/worker/verification" element={<PrivateRoute><WorkerRoute><WorkerVerification /></WorkerRoute></PrivateRoute>} />
           <Route path="/worker/history" element={<PrivateRoute><WorkerRoute><WorkerHistory /></WorkerRoute></PrivateRoute>} />
           <Route path="/worker/earnings" element={<PrivateRoute><WorkerRoute><WorkerEarnings /></WorkerRoute></PrivateRoute>} />
+          <Route path="/worker/stats" element={<PrivateRoute><WorkerRoute><WorkerStats /></WorkerRoute></PrivateRoute>} />
 
           {/* Admin */}
           <Route path="/admin" element={<PrivateRoute><AdminRoute><AdminDashboard /></AdminRoute></PrivateRoute>} />

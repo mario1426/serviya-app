@@ -124,9 +124,16 @@ const getWorkerEarnings = async (req, res) => {
     const startOfLastMonth = new Date(now.getFullYear(), now.getMonth() - 1, 1);
     const endOfLastMonth = new Date(now.getFullYear(), now.getMonth(), 0);
 
+    // Últimas 8 semanas para el gráfico
+    const eightWeeksAgo = new Date(now);
+    eightWeeksAgo.setDate(now.getDate() - 56);
+
     const completedJobs = await Request.find({ worker: req.user._id, status: 'completed' })
       .populate('category', 'name icon')
       .sort({ completedAt: -1 });
+
+    const allJobs = await Request.find({ worker: req.user._id })
+      .populate('category', 'name icon');
 
     const thisMonth = completedJobs.filter(r => new Date(r.completedAt) >= startOfMonth);
     const lastMonth = completedJobs.filter(r => {
@@ -136,6 +143,49 @@ const getWorkerEarnings = async (req, res) => {
 
     const sum = arr => arr.reduce((acc, r) => acc + ((r.payment && r.payment.workerAmount) || 0), 0);
 
+    // Ganancias por semana (últimas 8 semanas)
+    const weeklyEarnings = [];
+    for (let i = 7; i >= 0; i--) {
+      const weekStart = new Date(now);
+      weekStart.setDate(now.getDate() - (i * 7) - now.getDay());
+      weekStart.setHours(0, 0, 0, 0);
+      const weekEnd = new Date(weekStart);
+      weekEnd.setDate(weekStart.getDate() + 6);
+      weekEnd.setHours(23, 59, 59, 999);
+
+      const weekJobs = completedJobs.filter(r => {
+        const d = new Date(r.completedAt);
+        return d >= weekStart && d <= weekEnd;
+      });
+
+      weeklyEarnings.push({
+        label: weekStart.toLocaleDateString('es-AR', { day: '2-digit', month: 'short' }),
+        total: sum(weekJobs),
+        jobs: weekJobs.length,
+      });
+    }
+
+    // Categorías más pedidas
+    const categoryCount = {};
+    allJobs.forEach(r => {
+      const name = r.category?.name || r.categorySlug;
+      const icon = r.category?.icon || '🔧';
+      if (!categoryCount[name]) categoryCount[name] = { name, icon, count: 0, earnings: 0 };
+      categoryCount[name].count++;
+      if (r.status === 'completed') {
+        categoryCount[name].earnings += (r.payment?.workerAmount || 0);
+      }
+    });
+    const topCategories = Object.values(categoryCount)
+      .sort((a, b) => b.count - a.count)
+      .slice(0, 5);
+
+    // Tasa de completado
+    const totalRequests = allJobs.length;
+    const completedCount = completedJobs.length;
+    const cancelledCount = allJobs.filter(r => r.status === 'rejected' || r.status === 'cancelled').length;
+    const completionRate = totalRequests > 0 ? Math.round((completedCount / totalRequests) * 100) : 0;
+
     res.json({
       thisMonthTotal: sum(thisMonth),
       thisMonthJobs: thisMonth.length,
@@ -143,6 +193,14 @@ const getWorkerEarnings = async (req, res) => {
       lastMonthJobs: lastMonth.length,
       allTimeTotal: sum(completedJobs),
       recentJobs: completedJobs.slice(0, 20),
+      weeklyEarnings,
+      topCategories,
+      completionRate,
+      totalRequests,
+      completedCount,
+      cancelledCount,
+      avgRating: req.user.workerInfo?.stats?.avgRating || 0,
+      totalReviews: req.user.workerInfo?.stats?.totalReviews || 0,
     });
   } catch (error) {
     res.status(500).json({ message: error.message });
