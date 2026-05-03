@@ -136,8 +136,8 @@ export default function Support() {
 
             <div className="mt-4 pt-4 border-t border-gray-100 text-center">
               <p className="text-xs text-gray-medium">También podés escribirnos directo a</p>
-              <a href="mailto:ojedamario911@gmail.com" className="text-sm font-medium text-primary">
-                ojedamario911@gmail.com
+              <a href="mailto:serviyaaplicacion@gmail.com" className="text-sm font-medium text-primary">
+                serviyaaplicacion@gmail.com
               </a>
             </div>
           </div>

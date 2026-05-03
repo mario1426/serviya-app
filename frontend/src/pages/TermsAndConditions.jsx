@@ -80,7 +80,7 @@ export default function TermsAndConditions() {
 
             <section>
               <h2 className="font-bold text-navy mb-2">12. Contacto</h2>
-              <p>Para consultas sobre estos términos podés contactarnos en <span className="text-primary font-medium">ojedamario911@gmail.com</span></p>
+              <p>Para consultas sobre estos términos podés contactarnos en <span className="text-primary font-medium">serviyaaplicacion@gmail.com</span></p>
             </section>
           </div>
         </div>

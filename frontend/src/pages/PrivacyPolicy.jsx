@@ -50,7 +50,7 @@ export default function PrivacyPolicy() {
 
             <section>
               <h2 className="font-bold text-navy mb-2">6. Tus derechos</h2>
-              <p>De acuerdo con la Ley 25.326 de Protección de Datos Personales de Argentina, tenés derecho a acceder, rectificar, actualizar y suprimir tus datos personales. Para ejercer estos derechos, contactanos en <span className="text-primary font-medium">ojedamario911@gmail.com</span></p>
+              <p>De acuerdo con la Ley 25.326 de Protección de Datos Personales de Argentina, tenés derecho a acceder, rectificar, actualizar y suprimir tus datos personales. Para ejercer estos derechos, contactanos en <span className="text-primary font-medium">serviyaaplicacion@gmail.com</span></p>
             </section>
 
             <section>
@@ -70,7 +70,7 @@ export default function PrivacyPolicy() {
 
             <section>
               <h2 className="font-bold text-navy mb-2">10. Contacto</h2>
-              <p>Para cualquier consulta sobre privacidad escribinos a <span className="text-primary font-medium">ojedamario911@gmail.com</span></p>
+              <p>Para cualquier consulta sobre privacidad escribinos a <span className="text-primary font-medium">serviyaaplicacion@gmail.com</span></p>
             </section>
           </div>
         </div>
