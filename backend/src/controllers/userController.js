@@ -2,7 +2,25 @@ const User = require('../models/User');
 
 // GET /api/users/workers?lat=&lng=&category=&radius=10000
 const getNearbyWorkers = async (req, res) => {
-  const { lat, lng, category, radius = 10000 } = req.query;
+  const { lat, lng, category, radius = 10000, search } = req.query;
+
+  // Búsqueda por nombre — no requiere coordenadas
+  if (search) {
+    try {
+      const filter = {
+        role: 'worker',
+        'workerInfo.isAvailable': true,
+        name: { $regex: search, $options: 'i' },
+      };
+      if (category) filter['workerInfo.services'] = category;
+      const workers = await User.find(filter)
+        .select('-firebaseUid -workerInfo.paymentMethod -workerInfo.verification.dniUrl -workerInfo.verification.selfieUrl')
+        .limit(30);
+      return res.json(workers);
+    } catch (error) {
+      return res.status(500).json({ message: error.message });
+    }
+  }
 
   if (!lat || !lng) {
     return res.status(400).json({ message: 'Se requieren coordenadas lat y lng' });

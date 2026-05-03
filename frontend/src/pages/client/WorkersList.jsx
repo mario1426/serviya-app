@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import useGeolocation from '../../hooks/useGeolocation';
 import api from '../../services/api';
@@ -17,53 +17,114 @@ export default function WorkersList() {
   const { coords, loading: geoLoading } = useGeolocation();
   const [workers, setWorkers] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [noWorkers, setNoWorkers] = useState(false);
+  const [search, setSearch] = useState('');
+  const [searchInput, setSearchInput] = useState('');
 
-  useEffect(() => {
-    if (!coords || !category) return;
-    setLoading(true);
-    api.get(`/users/workers?lat=${coords.lat}&lng=${coords.lng}&category=${category}`)
-      .then((data) => {
-        setWorkers(data);
-        setNoWorkers(data.length === 0);
-      })
-      .catch(console.error)
-      .finally(() => setLoading(false));
-  }, [coords, category]);
+  const fetchWorkers = useCallback(() => {
+    if (search) {
+      // Búsqueda por nombre — no necesita coords
+      setLoading(true);
+      const qs = new URLSearchParams({ search });
+      if (category) qs.set('category', category);
+      api.get(`/users/workers?${qs}`)
+        .then(setWorkers)
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    } else if (coords) {
+      // Búsqueda por ubicación
+      setLoading(true);
+      const qs = new URLSearchParams({ lat: coords.lat, lng: coords.lng });
+      if (category) qs.set('category', category);
+      api.get(`/users/workers?${qs}`)
+        .then(setWorkers)
+        .catch(console.error)
+        .finally(() => setLoading(false));
+    }
+  }, [coords, category, search]);
 
-  if (geoLoading || loading) {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-      </div>
-    );
-  }
+  useEffect(() => { fetchWorkers(); }, [fetchWorkers]);
+
+  const handleSearch = (e) => {
+    e.preventDefault();
+    setSearch(searchInput.trim());
+  };
+
+  const handleClearSearch = () => {
+    setSearch('');
+    setSearchInput('');
+  };
+
+  const isLoading = geoLoading || loading;
 
   return (
     <div className="min-h-screen bg-gray-light">
       <header className="bg-white shadow-sm sticky top-0 z-10">
         <div className="max-w-lg mx-auto px-4 py-3 flex items-center gap-3">
           <button onClick={() => navigate(-1)} className="text-navy font-bold text-xl">←</button>
-          <h1 className="text-lg font-bold text-navy capitalize">{category?.replace('-', ' ')}</h1>
+          <h1 className="text-lg font-bold text-navy capitalize">
+            {category?.replace('-', ' ') || 'Trabajadores'}
+          </h1>
+        </div>
+        {/* Barra de búsqueda */}
+        <div className="max-w-lg mx-auto px-4 pb-3">
+          <form onSubmit={handleSearch} className="flex gap-2">
+            <input
+              type="text"
+              value={searchInput}
+              onChange={e => setSearchInput(e.target.value)}
+              placeholder="Buscar por nombre..."
+              className="input-field flex-1 text-sm"
+            />
+            {search ? (
+              <button
+                type="button"
+                onClick={handleClearSearch}
+                className="px-3 py-2 rounded-xl bg-gray-100 text-gray-medium text-sm font-medium hover:bg-gray-200 transition-colors"
+              >
+                ✕ Limpiar
+              </button>
+            ) : (
+              <button
+                type="submit"
+                className="px-4 py-2 rounded-xl bg-primary text-white text-sm font-medium hover:bg-navy transition-colors"
+              >
+                Buscar
+              </button>
+            )}
+          </form>
+          {search && (
+            <p className="text-xs text-gray-medium mt-1.5">
+              Resultados para "<span className="font-medium text-navy">{search}</span>"
+            </p>
+          )}
         </div>
       </header>
 
       <div className="max-w-lg mx-auto px-4 py-6">
-        {noWorkers ? (
+        {isLoading ? (
+          <div className="flex justify-center py-16">
+            <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          </div>
+        ) : workers.length === 0 ? (
           <div className="card text-center py-10">
-            <p className="text-4xl mb-3">😔</p>
-            <p className="font-semibold text-navy mb-2">Todavía no hay trabajadores en tu zona</p>
-            <p className="text-gray-medium text-sm mb-6">Pero podés ser el primero en ofrecer este servicio</p>
-            <button
-              onClick={() => navigate('/login')}
-              className="btn-navy"
-            >
-              Quiero ofrecer servicios aquí
-            </button>
+            <p className="text-4xl mb-3">{search ? '🔍' : '😔'}</p>
+            <p className="font-semibold text-navy mb-2">
+              {search ? `Sin resultados para "${search}"` : 'Todavía no hay trabajadores en tu zona'}
+            </p>
+            <p className="text-gray-medium text-sm mb-6">
+              {search ? 'Probá con otro nombre o limpiá la búsqueda' : 'Pero podés ser el primero en ofrecer este servicio'}
+            </p>
+            {!search && (
+              <button onClick={() => navigate('/login')} className="btn-navy">
+                Quiero ofrecer servicios aquí
+              </button>
+            )}
           </div>
         ) : (
           <div className="space-y-3">
-            <p className="text-sm text-gray-medium">{workers.length} profesional(es) cerca tuyo</p>
+            <p className="text-sm text-gray-medium">
+              {workers.length} profesional(es) {search ? 'encontrado(s)' : 'cerca tuyo'}
+            </p>
             {workers.map((worker) => (
               <button
                 key={worker._id}
