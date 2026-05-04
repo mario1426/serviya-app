@@ -38,6 +38,7 @@ import Reclamo from './pages/client/Reclamo';
 import Chat from './pages/Chat';
 import NotFound from './pages/NotFound';
 import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentResult from './pages/PaymentResult';
 import PaymentFailure from './pages/PaymentFailure';
 import PaymentPending from './pages/PaymentPending';
 import TermsAndConditions from './pages/TermsAndConditions';
@@ -107,6 +108,7 @@ export default function App() {
           <Route path="/payment/success" element={<PaymentSuccess />} />
           <Route path="/payment/failure" element={<PaymentFailure />} />
           <Route path="/payment/pending" element={<PaymentPending />} />
+          <Route path="/payment/:requestId" element={<PaymentResult />} />
 
           {/* Cliente */}
           <Route path="/home" element={<PrivateRoute><ClientRoute><ClientHome /></ClientRoute></PrivateRoute>} />
