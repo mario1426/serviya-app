@@ -16,6 +16,7 @@ export default function RateService() {
   const [fetching, setFetching] = useState(true);
   const [error, setError] = useState('');
   const [done, setDone] = useState(false);
+  const [payLoading, setPayLoading] = useState(false);
 
   useEffect(() => {
     api.get(`/requests/${requestId}`)
@@ -38,13 +39,28 @@ export default function RateService() {
     }
   };
 
+  const handlePay = async () => {
+    setPayLoading(true);
+    try {
+      const { initPoint } = await api.post('/payments/create-preference', { requestId });
+      window.location.href = initPoint;
+    } catch (err) {
+      alert('Error al iniciar el pago: ' + err.message);
+      setPayLoading(false);
+    }
+  };
+
   if (fetching) return (
     <div className="min-h-screen flex items-center justify-center">
       <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin" />
     </div>
   );
 
-  // Pantalla de éxito
+  const worker = request?.worker;
+  const price = request?.finalPrice || request?.proposedPrice || 0;
+  const alreadyPaid = request?.payment?.status === 'paid';
+
+  // Pantalla post-calificación: pago
   if (done) return (
     <div className="min-h-screen bg-gray-light flex items-center justify-center px-4">
       <div className="bg-white rounded-3xl shadow-xl w-full max-w-sm p-8 text-center">
@@ -53,6 +69,37 @@ export default function RateService() {
         <p className="text-gray-medium text-sm mb-6">
           Tu calificación ayuda a otros clientes a elegir mejor.
         </p>
+
+        {/* Bloque de pago */}
+        {!alreadyPaid && price > 0 && (
+          <div className="bg-gray-50 rounded-2xl p-4 mb-5 border border-gray-100">
+            <p className="text-sm font-medium text-navy mb-1">Pago pendiente</p>
+            <p className="text-3xl font-bold text-navy mb-1">
+              ${price.toLocaleString('es-AR')}
+            </p>
+            <p className="text-xs text-gray-medium mb-4">
+              Por el servicio de {request?.category?.name || worker?.name}
+            </p>
+            <button
+              onClick={handlePay}
+              disabled={payLoading}
+              className="w-full bg-[#009EE3] text-white font-bold py-3 px-6 rounded-xl hover:bg-[#0088cc] transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+            >
+              {payLoading ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <>💳 Pagar con Mercado Pago</>
+              )}
+            </button>
+          </div>
+        )}
+
+        {alreadyPaid && (
+          <div className="bg-green-50 border border-green-100 rounded-2xl p-4 mb-5">
+            <p className="text-green-700 font-medium text-sm">✅ Pago ya acreditado</p>
+          </div>
+        )}
+
         <button onClick={() => navigate('/home')} className="btn-primary w-full">
           Volver al inicio
         </button>
@@ -63,13 +110,10 @@ export default function RateService() {
     </div>
   );
 
-  const worker = request?.worker;
-
   return (
     <div className="min-h-screen bg-gray-light flex items-center justify-center px-4">
       <div className="bg-white rounded-3xl shadow-xl w-full max-w-sm p-8 text-center">
 
-        {/* Info del trabajador */}
         {worker ? (
           <div className="mb-5">
             <img
@@ -88,7 +132,6 @@ export default function RateService() {
 
         <p className="text-gray-medium text-sm mb-5">¿Cómo fue tu experiencia?</p>
 
-        {/* Estrellas */}
         <div className="flex justify-center gap-1 mb-2">
           {[1, 2, 3, 4, 5].map(star => (
             <button
@@ -120,7 +163,7 @@ export default function RateService() {
         {error && <p className="text-primary text-sm mb-3">{error}</p>}
 
         <button onClick={handleSubmit} disabled={loading} className="btn-primary w-full">
-          {loading ? 'Enviando...' : '⭐ Enviar calificación'}
+          {loading ? 'Enviando...' : '⭐ Enviar calificación y pagar'}
         </button>
 
         <button onClick={() => navigate('/home')} className="w-full text-gray-medium text-sm mt-3 hover:underline">

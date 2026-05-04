@@ -65,11 +65,20 @@ const handleWebhook = async (req, res) => {
 
       if (payment.status === 'approved') {
         const requestId = payment.external_reference;
-        await Request.findByIdAndUpdate(requestId, {
-          'payment.status': 'paid',
-          'payment.mpPaymentId': String(payment.id),
-          'payment.paidAt': new Date(),
-        });
+        const request = await Request.findById(requestId);
+        if (request) {
+          const total = payment.transaction_amount || request.finalPrice || request.proposedPrice || 0;
+          const commission = Math.round(total * 0.20);
+          const workerAmount = total - commission;
+          await Request.findByIdAndUpdate(requestId, {
+            'payment.status': 'paid',
+            'payment.mpPaymentId': String(payment.id),
+            'payment.paidAt': new Date(),
+            'payment.totalAmount': total,
+            'payment.commission': commission,
+            'payment.workerAmount': workerAmount,
+          });
+        }
       }
     } catch (error) {
       console.error('Webhook error:', error.message);

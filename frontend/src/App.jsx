@@ -37,6 +37,9 @@ import Reclamo from './pages/client/Reclamo';
 // Shared
 import Chat from './pages/Chat';
 import NotFound from './pages/NotFound';
+import PaymentSuccess from './pages/PaymentSuccess';
+import PaymentFailure from './pages/PaymentFailure';
+import PaymentPending from './pages/PaymentPending';
 import TermsAndConditions from './pages/TermsAndConditions';
 import PrivacyPolicy from './pages/PrivacyPolicy';
 import Support from './pages/Support';
@@ -101,6 +104,9 @@ export default function App() {
           <Route path="/terms" element={<TermsAndConditions />} />
           <Route path="/privacy" element={<PrivacyPolicy />} />
           <Route path="/support" element={<Support />} />
+          <Route path="/payment/success" element={<PaymentSuccess />} />
+          <Route path="/payment/failure" element={<PaymentFailure />} />
+          <Route path="/payment/pending" element={<PaymentPending />} />
 
           {/* Cliente */}
           <Route path="/home" element={<PrivateRoute><ClientRoute><ClientHome /></ClientRoute></PrivateRoute>} />
