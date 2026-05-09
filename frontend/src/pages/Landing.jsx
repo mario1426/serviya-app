@@ -1,6 +1,41 @@
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../context/AuthContext';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
+
+const SLIDES = [
+  {
+    icon: '⚡',
+    hook: '¿Se te rompió algo en casa?',
+    title: 'Un profesional en tu puerta\nen minutos',
+    sub: 'Plomeros, electricistas, cerrajeros y más. Verificados, con reseñas reales.',
+    cta: 'Buscar profesional',
+    bg: 'from-navy to-navy-dark',
+  },
+  {
+    icon: '💰',
+    hook: '¿Querés ganar dinero extra?',
+    title: 'Ofrecé tus servicios\ny cobrá por tu trabajo',
+    sub: 'Registrate gratis, fijás tus precios y recibís solicitudes en tu zona.',
+    cta: 'Empezar a trabajar',
+    bg: 'from-green-800 to-green-900',
+  },
+  {
+    icon: '🕐',
+    hook: '¿Sin tiempo para los trámites?',
+    title: 'Mandá a alguien\npor vos',
+    sub: 'Pagos de servicios, filas en el banco, gestiones en el municipio. Delegá y listo.',
+    cta: 'Quiero saber más',
+    bg: 'from-indigo-800 to-indigo-900',
+  },
+  {
+    icon: '⭐',
+    hook: 'Más de 15 servicios disponibles',
+    title: 'Todo lo que necesitás,\nen un solo lugar',
+    sub: 'Desde un chef para tu cena hasta un entrenador personal. ServiYa lo tiene.',
+    cta: 'Ver servicios',
+    bg: 'from-primary to-red-800',
+  },
+];
 
 const SERVICES = [
   { icon: '🔧', name: 'Plomería' },
@@ -11,6 +46,11 @@ const SERVICES = [
   { icon: '👕', name: 'Lavandería' },
   { icon: '💇', name: 'Peluquería' },
   { icon: '🐾', name: 'Mascotas' },
+  { icon: '🔑', name: 'Cerrajero' },
+  { icon: '👨‍🍳', name: 'Chef' },
+  { icon: '💪', name: 'Entrenador' },
+  { icon: '👶', name: 'Niñera' },
+  { icon: '📋', name: 'Trámites' },
   { icon: '🚕', name: 'Viajes' },
   { icon: '🏠', name: 'Reparaciones' },
 ];
@@ -18,12 +58,32 @@ const SERVICES = [
 export default function Landing() {
   const navigate = useNavigate();
   const { isAuthenticated, isWorker } = useAuth();
+  const [current, setCurrent] = useState(0);
+  const [animating, setAnimating] = useState(false);
 
   useEffect(() => {
     if (isAuthenticated) {
       navigate(isWorker ? '/worker/dashboard' : '/home');
     }
   }, [isAuthenticated, isWorker, navigate]);
+
+  // Auto-avance cada 4 segundos
+  useEffect(() => {
+    const timer = setInterval(() => {
+      goTo((prev) => (prev + 1) % SLIDES.length);
+    }, 4000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const goTo = (indexOrFn) => {
+    setAnimating(true);
+    setTimeout(() => {
+      setCurrent(indexOrFn);
+      setAnimating(false);
+    }, 250);
+  };
+
+  const slide = SLIDES[current];
 
   return (
     <div className="min-h-screen bg-white">
@@ -39,40 +99,56 @@ export default function Landing() {
         </button>
       </header>
 
-      {/* Hero */}
-      <section className="bg-gradient-to-br from-navy to-navy-dark text-white px-6 py-16 text-center">
-        <h1 className="text-4xl font-bold mb-4 leading-tight">
-          Los mejores servicios,<br />
-          <span className="text-primary-light">en tu puerta</span>
-        </h1>
-        <p className="text-blue-200 mb-8 text-lg">
-          Conectamos profesionales verificados con vos en minutos. Todo Argentina.
-        </p>
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
-          <button onClick={() => navigate('/login')} className="btn-primary text-lg py-4 px-8">
-            Contratar servicio
-          </button>
+      {/* Carrusel Hero */}
+      <section className={`bg-gradient-to-br ${slide.bg} text-white px-6 py-14 text-center transition-colors duration-500`}>
+        <div
+          className="transition-opacity duration-250"
+          style={{ opacity: animating ? 0 : 1 }}
+        >
+          <p className="text-4xl mb-3">{slide.icon}</p>
+          <p className="text-sm font-semibold uppercase tracking-widest text-white/60 mb-2">
+            {slide.hook}
+          </p>
+          <h1 className="text-3xl sm:text-4xl font-bold mb-4 leading-tight whitespace-pre-line">
+            {slide.title}
+          </h1>
+          <p className="text-white/80 mb-8 text-base max-w-sm mx-auto">
+            {slide.sub}
+          </p>
           <button
             onClick={() => navigate('/login')}
-            className="bg-white/10 border border-white/30 text-white font-semibold py-4 px-8 rounded-xl hover:bg-white/20 transition-colors"
+            className="bg-white text-navy font-bold py-3 px-8 rounded-xl hover:bg-white/90 transition-colors text-base"
           >
-            Ofrecer servicios
+            {slide.cta} →
           </button>
+        </div>
+
+        {/* Indicadores */}
+        <div className="flex justify-center gap-2 mt-8">
+          {SLIDES.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => goTo(i)}
+              className={`rounded-full transition-all duration-300 ${
+                i === current ? 'w-6 h-2 bg-white' : 'w-2 h-2 bg-white/40'
+              }`}
+            />
+          ))}
         </div>
       </section>
 
       {/* Servicios */}
       <section className="px-6 py-12">
         <h2 className="text-2xl font-bold text-center text-navy mb-8">¿Qué necesitás hoy?</h2>
-        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-4 max-w-3xl mx-auto">
+        <div className="grid grid-cols-3 sm:grid-cols-5 gap-3 max-w-3xl mx-auto">
           {SERVICES.map((s) => (
             <button
               key={s.name}
               onClick={() => navigate('/login')}
-              className="card flex flex-col items-center gap-2 p-4 hover:shadow-md hover:border hover:border-primary/20 transition-all cursor-pointer"
+              className="card flex flex-col items-center gap-2 p-3 hover:shadow-md hover:border hover:border-primary/20 transition-all cursor-pointer"
             >
-              <span className="text-3xl">{s.icon}</span>
-              <span className="text-sm font-medium text-gray-dark text-center">{s.name}</span>
+              <span className="text-2xl">{s.icon}</span>
+              <span className="text-xs font-medium text-gray-dark text-center leading-tight">{s.name}</span>
             </button>
           ))}
         </div>
@@ -84,7 +160,7 @@ export default function Landing() {
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-6 max-w-3xl mx-auto">
           {[
             { step: '1', title: 'Elegí el servicio', desc: 'Buscá lo que necesitás y encontrá profesionales cercanos.' },
-            { step: '2', title: 'Contactá al trabajador', desc: 'Chatear, acordar precio y programar la visita.' },
+            { step: '2', title: 'Contactá al trabajador', desc: 'Chateá, acordá el precio y programá la visita.' },
             { step: '3', title: 'Listo y calificá', desc: 'Pagá seguro y dejá tu reseña para ayudar a la comunidad.' },
           ].map((item) => (
             <div key={item.step} className="card text-center">
