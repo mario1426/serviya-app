@@ -5,16 +5,21 @@ import api from '../../services/api';
 import { ProfilePhotoUpload, PortfolioUpload } from '../../components/PhotoUpload';
 
 const ALL_SERVICES = [
-  { slug: 'plomeria', name: 'Plomería', icon: '🔧' },
-  { slug: 'electricidad', name: 'Electricidad', icon: '⚡' },
-  { slug: 'jardineria', name: 'Jardinería', icon: '🌱' },
-  { slug: 'corte-pasto', name: 'Corte de pasto', icon: '🌿' },
-  { slug: 'lavado-autos', name: 'Lavado de autos', icon: '🚗' },
-  { slug: 'lavanderia', name: 'Lavandería', icon: '👕' },
-  { slug: 'peluqueria', name: 'Peluquería', icon: '💇' },
-  { slug: 'mascotas', name: 'Mascotas', icon: '🐾' },
-  { slug: 'viajes', name: 'Viajes', icon: '🚕' },
-  { slug: 'reparaciones', name: 'Reparaciones', icon: '🏠' },
+  { slug: 'plomeria',            name: 'Plomería',             icon: '🔧' },
+  { slug: 'electricidad',        name: 'Electricidad',         icon: '⚡' },
+  { slug: 'jardineria',          name: 'Jardinería',           icon: '🌱' },
+  { slug: 'corte-pasto',         name: 'Corte de pasto',       icon: '🌿' },
+  { slug: 'lavado-autos',        name: 'Lavado de autos',      icon: '🚗' },
+  { slug: 'lavanderia',          name: 'Lavandería',           icon: '👕' },
+  { slug: 'peluqueria',          name: 'Peluquería',           icon: '💇' },
+  { slug: 'mascotas',            name: 'Mascotas',             icon: '🐾' },
+  { slug: 'viajes',              name: 'Viajes',               icon: '🚕' },
+  { slug: 'reparaciones',        name: 'Reparaciones',         icon: '🏠' },
+  { slug: 'cerrajero',           name: 'Cerrajero',            icon: '🔑' },
+  { slug: 'chef-domicilio',      name: 'Chef a domicilio',     icon: '👨‍🍳' },
+  { slug: 'entrenador-personal', name: 'Entrenador personal',  icon: '💪' },
+  { slug: 'niera',               name: 'Niñera',               icon: '👶' },
+  { slug: 'tramites-gestiones',  name: 'Trámites y gestiones', icon: '📋' },
 ];
 
 export default function WorkerProfileSetup() {
