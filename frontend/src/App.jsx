@@ -1,6 +1,7 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { usePushNotifications } from './hooks/usePushNotifications';
+import SupportChat from './components/SupportChat';
 
 // Pages
 import Landing from './pages/Landing';
@@ -97,6 +98,7 @@ export default function App() {
     <BrowserRouter>
       <AuthProvider>
         <PushBootstrap />
+        <SupportChat />
         <Routes>
           {/* Públicas */}
           <Route path="/" element={<Landing />} />
